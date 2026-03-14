@@ -67,7 +67,8 @@ router.post('/register-hospital', registerHospital);
  *           schema:
  *             type: object
  *             properties:
- *               email: { type: string, description: "Requis pour User/Hospital" }
+ *               telephone: { type: string, description: "Requis pour User (ex: 01020304)" }
+ *               contact: { type: string, description: "Requis pour Hospital (ex: 70809000)" }
  *               nomUtilisateur: { type: string, description: "Requis pour Admin" }
  *               motDePasse: { type: string }
  *     responses:

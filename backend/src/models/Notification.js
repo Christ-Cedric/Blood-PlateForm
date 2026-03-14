@@ -16,7 +16,7 @@ const notificationSchema = new mongoose.Schema({
     lue: { type: Boolean, default: false },
     type: {
         type: String,
-        enum: ['demande_urgence', 'rappel_don', 'systeme'],
+        enum: ['demande_urgence', 'rappel_don', 'don_valide', 'presence_confirmee', 'reponse_demande', 'systeme'],
         default: 'systeme'
     }
 }, { timestamps: true });

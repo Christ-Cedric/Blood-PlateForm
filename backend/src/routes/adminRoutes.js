@@ -9,7 +9,24 @@ const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
 const { authorize } = require('../middleware/roleMiddleware');
-const { verifyHospital, deleteAccount, getStats } = require('../controllers/adminController');
+const { verifyHospital, deleteAccount, getStats, getPendingHospitals, getAllHospitals, getAllUsers, getReports } = require('../controllers/adminController');
+
+/**
+ * @swagger
+ * /api/admin/pending-hospitals:
+ *   get:
+ *     summary: Liste des hôpitaux en attente de validation
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste retournée
+ */
+router.get('/pending-hospitals', protect, authorize('admin'), getPendingHospitals);
+router.get('/hospitals', protect, authorize('admin'), getAllHospitals);
+router.get('/users', protect, authorize('admin'), getAllUsers);
+router.get('/reports', protect, authorize('admin'), getReports);
 
 /**
  * @swagger

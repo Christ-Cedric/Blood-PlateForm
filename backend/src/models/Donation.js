@@ -10,6 +10,10 @@ const donationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Hospital'
     },
+    requestId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'BloodRequest'
+    },
     groupeSanguin: { type: String, required: true },
     quantitePoches: { type: Number, required: true },
     dateDon: { type: Date, default: Date.now },

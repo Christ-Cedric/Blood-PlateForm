@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 
 const adminSchema = new mongoose.Schema({
     nomUtilisateur: { type: String, required: true, unique: true },
+    email: { type: String, unique: true, sparse: true },
     motDePasse: { type: String, required: true },
     role: { type: String, default: 'admin' }
 }, { timestamps: true });
