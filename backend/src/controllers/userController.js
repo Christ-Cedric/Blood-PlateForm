@@ -15,6 +15,27 @@ exports.respondToRequest = async (req, res) => {
             return res.status(404).json({ message: "Demande non trouvée" });
         }
 
+        // --- RÈGLE DES 3 MOIS ---
+        // Vérifier la date du dernier don complété
+        const lastDonation = await Donation.findOne({
+            userId: req.user._id,
+            statut: 'complete'
+        }).sort({ dateDon: -1 });
+
+        if (lastDonation) {
+            const threeMonthsInMs = 3 * 30 * 24 * 60 * 60 * 1000;
+            const timeSinceLastDonation = Date.now() - new Date(lastDonation.dateDon).getTime();
+            
+            if (timeSinceLastDonation < threeMonthsInMs) {
+                const nextEligibleDate = new Date(new Date(lastDonation.dateDon).getTime() + threeMonthsInMs);
+                return res.status(400).json({ 
+                    message: `Vous ne pouvez pas donner de sang pour le moment. Votre dernier don date du ${new Date(lastDonation.dateDon).toLocaleDateString('fr-FR')}. Vous serez éligible à nouveau le ${nextEligibleDate.toLocaleDateString('fr-FR')}.`,
+                    nextEligibleDate
+                });
+            }
+        }
+        // ------------------------
+
         // Vérifier si l'utilisateur a déjà répondu à cette demande
         const existingDonation = await Donation.findOne({
             userId: req.user._id,

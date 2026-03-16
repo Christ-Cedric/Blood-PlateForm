@@ -78,6 +78,25 @@ exports.confirmDonation = async (req, res) => {
             return res.status(403).json({ message: "Action non autorisée pour cet hôpital" });
         }
 
+        // --- RÈGLE DES 3 MOIS (Sécurité hôpital) ---
+        const lastDonation = await Donation.findOne({
+            userId: donation.userId,
+            statut: 'complete',
+            _id: { $ne: donationId } // Ne pas compter le don actuel s'il était déjà marqué complete (cas bord)
+        }).sort({ dateDon: -1 });
+
+        if (lastDonation) {
+            const threeMonthsInMs = 3 * 30 * 24 * 60 * 60 * 1000;
+            const timeSinceLastDonation = Date.now() - new Date(lastDonation.dateDon).getTime();
+            
+            if (timeSinceLastDonation < threeMonthsInMs) {
+                return res.status(400).json({ 
+                    message: `Impossible de valider ce don. Le dernier don de ce donneur date de moins de 3 mois (${new Date(lastDonation.dateDon).toLocaleDateString('fr-FR')}).`
+                });
+            }
+        }
+        // -------------------------------------------
+
         donation.statut = 'complete';
         donation.dateDon = Date.now();
         await donation.save();

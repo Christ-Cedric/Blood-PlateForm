@@ -3,6 +3,8 @@ import { AdminLayout } from "../../components/layouts";
 import { Card, Typography, Button } from "../../components/ui";
 import { Download, TrendingUp, TrendingDown, Users, Building2, Droplet, Calendar, Loader2 } from "lucide-react";
 import { getAdminReportsApi } from "../../api";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export function AdminReports() {
   const [data, setData] = React.useState<any>(null);
@@ -22,6 +24,64 @@ export function AdminReports() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleExportPDF = () => {
+    if (!data) return;
+
+    const doc = new jsPDF();
+    const dateStr = new Date().toLocaleDateString("fr-FR");
+
+    // Titre
+    doc.setFontSize(22);
+    doc.setTextColor(204, 0, 0); // #CC0000
+    doc.text("Rapport National SangVie", 14, 20);
+
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    doc.text(`Généré le : ${dateStr}`, 14, 28);
+
+    // Section Stats Globales
+    doc.setFontSize(14);
+    doc.setTextColor(0);
+    doc.text("Statistiques Globales", 14, 40);
+
+    const totalDonations = data.regionalData.reduce((acc: number, r: any) => acc + r.donations, 0);
+    const totalDonors = data.regionalData.reduce((acc: number, r: any) => acc + r.donors, 0);
+    const totalHospitals = data.regionalData.reduce((acc: number, r: any) => acc + r.hospitals, 0);
+
+    autoTable(doc, {
+      startY: 45,
+      head: [["Indicateur", "Valeur"]],
+      body: [
+        ["Total des Dons réalisées (ce mois)", totalDonations.toLocaleString()],
+        ["Nombre total de Donneurs actifs", totalDonors.toLocaleString()],
+        ["Nombre total d'Hôpitaux partenaires", totalHospitals.toString()],
+        ["Taux de satisfaction", "89%"],
+      ],
+      theme: "striped",
+      headStyles: { fillColor: [204, 0, 0] },
+    });
+
+    // Section Détails par Région
+    const finalY = (doc as any).lastAutoTable.finalY + 15;
+    doc.text("Détails par Région", 14, finalY);
+
+    autoTable(doc, {
+      startY: finalY + 5,
+      head: [["Région", "Hôpitaux", "Donneurs", "Dons", "Croissance"]],
+      body: data.regionalData.map((r: any) => [
+        r.region,
+        r.hospitals,
+        r.donors,
+        r.donations,
+        `${r.growth}%`,
+      ]),
+      theme: "grid",
+      headStyles: { fillColor: [26, 122, 63] }, // Vert pour l'équilibre
+    });
+
+    doc.save(`rapport_sangvie_${new Date().toISOString().split("T")[0]}.pdf`);
   };
 
   if (isLoading || !data) {
@@ -53,7 +113,7 @@ export function AdminReports() {
               Vue d'ensemble nationale - Mars 2026
             </Typography.Body>
           </div>
-          <Button className="bg-[#1A7A3F]">
+          <Button className="bg-[#1A7A3F]" onClick={handleExportPDF}>
             <Download className="w-4 h-4 mr-2" />
             Exporter le rapport
           </Button>
