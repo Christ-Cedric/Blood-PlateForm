@@ -1,5 +1,3 @@
 {
-  "buildCommand": "cd Blood-Donnation-Platform--main && npm install && npm run build",
-  "outputDirectory": "Blood-Donnation-Platform--main/dist",
-  "framework": "vite"
+  "outputDirectory": "Blood-Donnation-Platform--main/dist"
 }

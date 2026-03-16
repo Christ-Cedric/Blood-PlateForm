@@ -7,6 +7,8 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
+    "install": "cd Blood-Donnation-Platform--main && npm install",
+    "build": "cd Blood-Donnation-Platform--main && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
