@@ -16,7 +16,27 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+
+// Configuration CORS dynamique
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    process.env.FRONTEND_URL
+].filter(Boolean); // Retire les valeurs vides ou undefined
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Autorise les requêtes sans origine (comme les apps mobiles ou curl)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+            callback(null, true);
+        } else {
+            callback(new Error('Non autorisé par CORS'));
+        }
+    },
+    credentials: true
+}));
+
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
