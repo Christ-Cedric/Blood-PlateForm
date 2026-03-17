@@ -1,22 +1,8 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "Blood-Donnation-Platform--main/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/assets/(.*)",
-      "dest": "/Blood-Donnation-Platform--main/dist/assets/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/Blood-Donnation-Platform--main/dist/index.html"
-    }
+  "buildCommand": "cd Blood-Donnation-Platform--main && npm install && npm run build",
+  "outputDirectory": "Blood-Donnation-Platform--main/dist",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
